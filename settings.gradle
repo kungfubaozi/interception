@@ -1,0 +1,1 @@
+include ':app', ':interception-core', ':interception-plugin', ':interception-processor'

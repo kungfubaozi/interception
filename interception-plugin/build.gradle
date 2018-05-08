@@ -1,0 +1,40 @@
+apply plugin: 'groovy'
+
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.github.richardpaco'
+
+repositories {
+    google()
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'com.android.tools.build:gradle:3.1.0'
+    implementation 'org.ow2.asm:asm:6.1'
+}
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+task setVersionToClass(type: Copy) {
+    from 'src/main/templates/Version.java'
+    into 'build/generated-src/main/java/com/richard/interception/plugin'
+    filter(ReplaceTokens, tokens: [version: VERSION])
+    outputs.upToDateWhen { false }
+}
+
+compileJava.dependsOn setVersionToClass
+
+sourceSets {
+    main {
+        java {
+            srcDir 'build/generated-src/main/java'
+        }
+    }
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"

@@ -1,7 +1,7 @@
 apply plugin: 'java-library'
 
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.richardpaco.interception'
+group='com.github.zskpaco.interception'
 
 repositories {
     mavenCentral()

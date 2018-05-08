@@ -1,7 +1,7 @@
 apply plugin: 'groovy'
 
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.richardpaco.interception'
+group='com.github.zskpaco.interception'
 
 repositories {
     google()
@@ -21,7 +21,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 task setVersionToClass(type: Copy) {
     from 'src/main/templates/Version.java'
-    into 'build/generated-src/main/java/com/richard/interception/plugin'
+    into 'build/generated-src/main/java/com/zskpaco/interception/plugin'
     filter(ReplaceTokens, tokens: [version: VERSION])
     outputs.upToDateWhen { false }
 }

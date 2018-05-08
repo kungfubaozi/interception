@@ -1,9 +1,10 @@
 apply plugin: 'com.android.application'
+//apply plugin: 'interception-android'
 
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.richard.interception.test"
+        applicationId "com.zskpaco.interception.test"
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
@@ -25,4 +26,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    compile project(path: ':interception-core')
 }

@@ -13,6 +13,9 @@ public class ModuleRunnerWrite {
     private static final String ELEMENT_ASYNC = "$ElementRunner$Async";
 
     public static String write(String basePath, InterceptionModel model) {
+        if (model.getModule() == null) {
+            return null;
+        }
         String moduleName = model.getModule().replace("-", "").replace("_", "").toUpperCase();
         model.setModule(moduleName);
         String root = model.getRoot().replace(".", "/");
@@ -37,7 +40,8 @@ public class ModuleRunnerWrite {
      * @param local
      */
     private static void writeRunnerClass(String path, String local, String moduleName) {
-        byte[] bytes = _RunnerBytes.dump(local + ELEMENT_RUNNER, local + ELEMENT_FACTORY, local + ELEMENT_UI, local + ELEMENT_ASYNC);
+        byte[] bytes = _RunnerBytes.dump(local + ELEMENT_RUNNER, local + ELEMENT_FACTORY,
+                local + ELEMENT_UI, local + ELEMENT_ASYNC);
         writeBytes(bytes, path + "/" + moduleName + ELEMENT_RUNNER + ".class");
     }
 
@@ -59,7 +63,8 @@ public class ModuleRunnerWrite {
      * @param moduleName
      * @param model
      */
-    private static void writeRunnerFactoryClass(String path, String local, String moduleName, InterceptionModel model) {
+    private static void writeRunnerFactoryClass(String path, String local, String moduleName,
+                                                InterceptionModel model) {
         byte[] bytes = _RunnerInstanceFactory.dump(local + ELEMENT_FACTORY, model);
         writeBytes(bytes, path + "/" + moduleName + ELEMENT_FACTORY + ".class");
     }

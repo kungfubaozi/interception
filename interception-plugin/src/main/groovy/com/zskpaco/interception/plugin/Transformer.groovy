@@ -84,7 +84,7 @@ class Transformer extends Transform {
                             ClassNode classNode = new ClassNode()
                             cr.accept(classNode, 0)
 
-                            if (runnerOwner == null) {
+                            if (runnerOwner == null && moduleFile.exists()) {
                                 runnerOwner = ModuleRunnerWrite.write(file.getAbsolutePath().replace(classNode.name, "").replace(".class", ""), model)
                             }
 

@@ -1,6 +1,6 @@
 apply plugin: 'groovy'
 
-if (!DEBUG){
+if (DEBUG == "false"){
     apply plugin: 'com.github.dcendents.android-maven'
 } else {
     apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
@@ -27,7 +27,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 task setVersionToClass(type: Copy) {
     from 'src/main/templates/Version.java'
     into 'build/generated-src/main/java/com/zskpaco/interception/plugin'
-    filter(ReplaceTokens, tokens: [version: !DEBUG ? RELEASE_VERSION : POM_VERSION_NAME ])
+    filter(ReplaceTokens, tokens: [version: DEBUG == "false" ? RELEASE_VERSION : POM_VERSION_NAME ])
     outputs.upToDateWhen { false }
 }
 

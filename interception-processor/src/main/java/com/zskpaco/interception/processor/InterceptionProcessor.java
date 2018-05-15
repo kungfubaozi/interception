@@ -191,7 +191,7 @@ public class InterceptionProcessor extends AbstractProcessor {
                                     "@Surround class must not container method!");
                         } else if (e.getKind() == ElementKind.FIELD) {
                             VariableElement variableElement = (VariableElement) e;
-                            if (variableElement.getAnnotationMirrors() == null) {
+                            if (variableElement.getAnnotationMirrors() == null || variableElement.getAnnotationMirrors().size() == 0) {
                                 throw new IllegalArgumentException(
                                         "@Surround field annotations can not be empty!");
                             }
@@ -202,6 +202,7 @@ public class InterceptionProcessor extends AbstractProcessor {
                             if (tempMirror == null) {
                                 tempMirror = variableElement.getAnnotationMirrors().get(
                                         0).getAnnotationType();
+
                             } else {
                                 if (i + 1 < size) {
                                     variableElement = (VariableElement) typeElement.getEnclosedElements().get(

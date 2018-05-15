@@ -7,6 +7,7 @@ import com.zskpaco.interception.plugin.utils.VisitorUtils;
 
 import org.objectweb.asm.*;
 
+import static com.zskpaco.interception.plugin.bean.TypeNames.*;
 import static org.objectweb.asm.Opcodes.*;
 
 import java.util.*;
@@ -23,7 +24,8 @@ public class ElementVisitor {
      * @param modelMap
      */
     public static void visit(String runnerOwner, boolean isSurround, String path, String owner,
-                             Map<Integer, List<ElementModel>> modelMap, String elementOwner, String loadName, String name) {
+                             Map<Integer, List<ElementModel>> modelMap, String elementOwner,
+                             String loadName, String name) {
         ClassWriter cw = new ClassWriter(1);
         FieldVisitor fv;
         MethodVisitor mv;
@@ -43,15 +45,15 @@ public class ElementVisitor {
         if (types != null) {
             includeTypeModels.addAll(types);
         }
-//
-//        String loadName = owner.substring(owner.lastIndexOf("/") + 1, owner.length());
-//
-//        String name = moduleName + "$" + loadName + (isSurround ? "$SurroundLoader" : "$ElementLoader");
 
-        cw.visit(52, ACC_PUBLIC + ACC_SUPER, elementOwner, "Ljava/lang/Object;Lcom/richard/interception/internal/IElementLoader<L" + owner + ";>;Lcom/richard/interception/internal/IElementExecutionLoader;", "java/lang/Object", new String[]{"com/richard/interception/internal/IElementLoader", "com/richard/interception/internal/IElementExecutionLoader"});
+        cw.visit(52, ACC_PUBLIC + ACC_SUPER, elementOwner,
+                "Ljava/lang/Object;L" + INTERFACE_ELEMENT_LOADER + "<L" + owner + ";>;" + L_INTERFACE_ELEMENT_EXECUTION_LOADER,
+                "java/lang/Object",
+                new String[]{INTERFACE_ELEMENT_LOADER, INTERFACE_ELEMENT_EXECUTION_LOADER});
 
         {
-            fv = cw.visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC, "HOST_CLASS", "Ljava/lang/String;", null, null);
+            fv = cw.visitField(ACC_PRIVATE + ACC_FINAL + ACC_STATIC, "HOST_CLASS",
+                    "Ljava/lang/String;", null, null);
             fv.visitEnd();
         }
         {
@@ -76,7 +78,8 @@ public class ElementVisitor {
             mv.visitEnd();
         }
         {
-            mv = cw.visitMethod(ACC_PUBLIC, "init", "(L" + owner + ";Ljava/lang/Object;)V", null, null);
+            mv = cw.visitMethod(ACC_PUBLIC, "init", "(L" + owner + ";Ljava/lang/Object;)V", null,
+                    null);
             mv.visitCode();
             mv.visitVarInsn(ALOAD, 0);
             mv.visitVarInsn(ALOAD, 1);
@@ -87,7 +90,8 @@ public class ElementVisitor {
                 mv.visitFieldInsn(PUTFIELD, elementOwner, "_host", "Ljava/lang/Object;");
                 mv.visitFieldInsn(GETSTATIC, elementOwner, "HOST_CLASS", "Ljava/lang/String;");
                 mv.visitInsn(ICONST_0);
-                mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "getBuilderById", "(Ljava/lang/String;I)Lcom/richard/interception/internal/IElementMultipartBuilder;", false);
+                mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "getBuilderById",
+                        "(Ljava/lang/String;I)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER, false);
                 mv.visitVarInsn(ASTORE, 3);
 
                 //if null
@@ -98,28 +102,30 @@ public class ElementVisitor {
                 mv.visitLabel(l5);
                 mv.visitVarInsn(ALOAD, 3);
                 mv.visitVarInsn(ALOAD, 2);
-                mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementMultipartBuilder", "setHost", "(Ljava/lang/Object;)Lcom/richard/interception/internal/IElementMultipartBuilder;", true);
+                mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_MULTIPART_BUILDER, "setHost",
+                        "(Ljava/lang/Object;)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER, true);
                 mv.visitInsn(POP);
 
                 mv.visitVarInsn(ALOAD, 3);
                 mv.visitVarInsn(ALOAD, 0);
-                mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "_surround", "(Lcom/richard/interception/internal/IElementMultipartBuilder;Lcom/richard/interception/internal/IElementExecutionLoader;)V", false);
+                mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "_surround",
+                        "(" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER + L_INTERFACE_ELEMENT_EXECUTION_LOADER + ")V",
+                        false);
 
                 mv.visitLabel(l4);
-                mv.visitFrame(Opcodes.F_APPEND, 1, new Object[]{"com/richard/interception/internal/IElementMultipartBuilder"}, 0, null);
+                mv.visitFrame(Opcodes.F_APPEND, 1,
+                        new Object[]{INTERFACE_ELEMENT_MULTIPART_BUILDER}, 0, null);
                 mv.visitInsn(RETURN);
 
             } else {
 
-                if (types != null)
-                    for (ElementModel model : types) {
-                        buildInit(mv, elementOwner, runnerOwner, model.getProcessId());
-                    }
+                if (types != null) for (ElementModel model : types) {
+                    buildInit(mv, elementOwner, runnerOwner, model.getProcessId());
+                }
 
-                if (fields != null)
-                    for (ElementModel model : fields) {
-                        buildInit(mv, elementOwner, runnerOwner, model.getProcessId());
-                    }
+                if (fields != null) for (ElementModel model : fields) {
+                    buildInit(mv, elementOwner, runnerOwner, model.getProcessId());
+                }
 
 
                 mv.visitInsn(RETURN);
@@ -132,12 +138,14 @@ public class ElementVisitor {
             mv.visitEnd();
         }
         {
-            mv = cw.visitMethod(ACC_PUBLIC, "startup", "(I[Ljava/lang/Object;)Ljava/lang/Object;", null, null);
+            mv = cw.visitMethod(ACC_PUBLIC, "startup", "(I[Ljava/lang/Object;)Ljava/lang/Object;",
+                    null, null);
             mv.visitCode();
             mv.visitFieldInsn(GETSTATIC, elementOwner, "HOST_CLASS", "Ljava/lang/String;");
             mv.visitVarInsn(ILOAD, 1);
-            mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "getBuilderById", "(Ljava/lang/String;I)Lcom/richard/interception/internal/IElementMultipartBuilder;", false);
-            mv.visitTypeInsn(CHECKCAST, "com/richard/interception/internal/IElementBuilder");
+            mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "getBuilderById",
+                    "(Ljava/lang/String;I)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER, false);
+            mv.visitTypeInsn(CHECKCAST, INTERFACE_ELEMENT_BUILDER);
             mv.visitVarInsn(ASTORE, 3);
             mv.visitVarInsn(ALOAD, 3);
             Label l2 = new Label();
@@ -146,26 +154,31 @@ public class ElementVisitor {
             mv.visitLabel(l3);
             mv.visitVarInsn(ALOAD, 3);
             mv.visitVarInsn(ALOAD, 2);
-            mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementBuilder", "setArgs", "([Ljava/lang/Object;)Lcom/richard/interception/internal/IElementBuilder;", true);
+            mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_BUILDER, "setArgs",
+                    "([Ljava/lang/Object;)" + L_INTERFACE_ELEMENT_BUILDER, true);
             mv.visitVarInsn(ALOAD, 0);
             if (isSurround) {
                 mv.visitFieldInsn(GETFIELD, elementOwner, "_host", "Ljava/lang/Object;");
             } else {
                 mv.visitFieldInsn(GETFIELD, elementOwner, "_local", "L" + owner + ";");
             }
-            mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementBuilder", "setHost", "(Ljava/lang/Object;)Lcom/richard/interception/internal/IElementMultipartBuilder;", true);
+            mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_BUILDER, "setHost",
+                    "(Ljava/lang/Object;)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER, true);
             mv.visitInsn(POP);
             mv.visitLabel(l2);
-            mv.visitFrame(Opcodes.F_APPEND, 1, new Object[]{"com/richard/interception/internal/IElementBuilder"}, 0, null);
+            mv.visitFrame(Opcodes.F_APPEND, 1, new Object[]{INTERFACE_ELEMENT_BUILDER}, 0, null);
             mv.visitVarInsn(ALOAD, 3);
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "_process", "(Lcom/richard/interception/internal/IElementBuilder;Lcom/richard/interception/internal/IElementExecutionLoader;)Ljava/lang/Object;", false);
+            mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "_process",
+                    "(" + L_INTERFACE_ELEMENT_BUILDER + L_INTERFACE_ELEMENT_EXECUTION_LOADER + ")Ljava/lang/Object;",
+                    false);
             mv.visitInsn(ARETURN);
             mv.visitMaxs(0, 0);
             mv.visitEnd();
         }
         {
-            mv = cw.visitMethod(ACC_PUBLIC + ACC_BRIDGE + ACC_SYNTHETIC, "init", "(Ljava/lang/Object;Ljava/lang/Object;)V", null, null);
+            mv = cw.visitMethod(ACC_PUBLIC + ACC_BRIDGE + ACC_SYNTHETIC, "init",
+                    "(Ljava/lang/Object;Ljava/lang/Object;)V", null, null);
             mv.visitCode();
             Label l0 = new Label();
             mv.visitLabel(l0);
@@ -173,7 +186,8 @@ public class ElementVisitor {
             mv.visitVarInsn(ALOAD, 1);
             mv.visitTypeInsn(CHECKCAST, owner);
             mv.visitVarInsn(ALOAD, 2);
-            mv.visitMethodInsn(INVOKEVIRTUAL, elementOwner, "init", "(L" + owner + ";Ljava/lang/Object;)V", false);
+            mv.visitMethodInsn(INVOKEVIRTUAL, elementOwner, "init",
+                    "(L" + owner + ";Ljava/lang/Object;)V", false);
             mv.visitInsn(RETURN);
             Label l1 = new Label();
             mv.visitLabel(l1);
@@ -186,7 +200,8 @@ public class ElementVisitor {
             Label l0 = new Label();
             mv.visitLabel(l0);
             mv.visitLdcInsn(Type.getType("L" + owner + ";"));
-            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getCanonicalName", "()Ljava/lang/String;", false);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Class", "getCanonicalName",
+                    "()Ljava/lang/String;", false);
             mv.visitFieldInsn(PUTSTATIC, elementOwner, "HOST_CLASS", "Ljava/lang/String;");
             Label l1 = new Label();
             mv.visitLabel(l1);
@@ -198,7 +213,8 @@ public class ElementVisitor {
             mv.visitEnd();
         }
         {
-            mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC, "_check_this_", "()V", null, null);
+            mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC + ACC_SYNTHETIC, "_check_this_", "()V",
+                    null, null);
             mv.visitCode();
             Label l0 = new Label();
             mv.visitLabel(l0);
@@ -209,7 +225,8 @@ public class ElementVisitor {
             mv.visitJumpInsn(IFNE, l1);
             mv.visitTypeInsn(NEW, "java/util/concurrent/ConcurrentHashMap");
             mv.visitInsn(DUP);
-            mv.visitMethodInsn(INVOKESPECIAL, "java/util/concurrent/ConcurrentHashMap", "<init>", "()V", false);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/util/concurrent/ConcurrentHashMap", "<init>",
+                    "()V", false);
             mv.visitVarInsn(ASTORE, 0);
             if (isSurround) {
                 buildSurround(mv, fields);
@@ -218,7 +235,8 @@ public class ElementVisitor {
             }
             mv.visitFieldInsn(GETSTATIC, elementOwner, "HOST_CLASS", "Ljava/lang/String;");
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "add", "(Ljava/lang/String;Ljava/util/Map;)V", false);
+            mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "add",
+                    "(Ljava/lang/String;Ljava/util/Map;)V", false);
             mv.visitLabel(l1);
             mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
             mv.visitInsn(RETURN);
@@ -226,7 +244,8 @@ public class ElementVisitor {
             mv.visitEnd();
         }
         {
-            mv = cw.visitMethod(ACC_PUBLIC, "build", "(IZ[Ljava/lang/Object;)Ljava/lang/Object;", null, null);
+            mv = cw.visitMethod(ACC_PUBLIC, "build", "(IZ[Ljava/lang/Object;)Ljava/lang/Object;",
+                    null, null);
             mv.visitCode();
             buildMethod(runnerOwner, elementOwner, owner, mv, models);
             Label l1 = new Label();
@@ -237,11 +256,13 @@ public class ElementVisitor {
         ModuleRunnerWrite.writeBytes(cw.toByteArray(), path.replace(loadName, name));
     }
 
-    private static void buildInit(MethodVisitor mv, String elementOwner, String runnerOwner, int processId) {
+    private static void buildInit(MethodVisitor mv, String elementOwner, String runnerOwner,
+                                  int processId) {
         mv.visitFieldInsn(GETSTATIC, elementOwner, "HOST_CLASS", "Ljava/lang/String;");
         VisitorUtils.visitIntPushStack(mv, processId);
-        mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "getBuilderById", "(Ljava/lang/String;I)Lcom/richard/interception/internal/IElementMultipartBuilder;", false);
-        mv.visitTypeInsn(CHECKCAST, "com/richard/interception/internal/IElementBuilder");
+        mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "getBuilderById",
+                "(Ljava/lang/String;I)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER, false);
+        mv.visitTypeInsn(CHECKCAST, INTERFACE_ELEMENT_BUILDER);
         mv.visitVarInsn(ASTORE, 3);
 
         mv.visitVarInsn(ALOAD, 3);
@@ -251,21 +272,24 @@ public class ElementVisitor {
         mv.visitLabel(l5);
         mv.visitVarInsn(ALOAD, 3);
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementBuilder", "setHost", "(Ljava/lang/Object;)Lcom/richard/interception/internal/IElementMultipartBuilder;", true);
+        mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_BUILDER, "setHost",
+                "(Ljava/lang/Object;)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER, true);
         mv.visitInsn(POP);
 
         mv.visitVarInsn(ALOAD, 3);
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "_process", "(Lcom/richard/interception/internal/IElementBuilder;Lcom/richard/interception/internal/IElementExecutionLoader;)Ljava/lang/Object;", false);
+        mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "_process",
+                "(" + L_INTERFACE_ELEMENT_BUILDER + L_INTERFACE_ELEMENT_EXECUTION_LOADER + ")Ljava/lang/Object;",
+                false);
         mv.visitInsn(POP);
         mv.visitLabel(l4);
-        mv.visitFrame(Opcodes.F_APPEND, 1, new Object[]{"com/richard/interception/internal/IElementBuilder"}, 0, null);
+        mv.visitFrame(Opcodes.F_APPEND, 1, new Object[]{INTERFACE_ELEMENT_BUILDER}, 0, null);
     }
 
     private static void buildNormal(MethodVisitor mv, List<ElementModel> models) {
         for (int i = 0; i < models.size(); i++) {
             ElementModel model = models.get(i);
-            mv.visitTypeInsn(NEW, "com/richard/interception/internal/ElementBuilderImpl");
+            mv.visitTypeInsn(NEW, INTERFACE_ELEMENT_BUILDER_IMPL);
             mv.visitInsn(DUP);
             VisitorUtils.visitIntPushStack(mv, model.getType());
             mv.visitLdcInsn(model.getName());
@@ -285,27 +309,34 @@ public class ElementVisitor {
                 mv.visitInsn(ICONST_0);
                 mv.visitTypeInsn(ANEWARRAY, "java/lang/Class");
             }
-            mv.visitMethodInsn(INVOKESPECIAL, "com/richard/interception/internal/ElementBuilderImpl", "<init>", "(ILjava/lang/String;ILjava/lang/Class;[Ljava/lang/Class;)V", false);
+            mv.visitMethodInsn(INVOKESPECIAL, INTERFACE_ELEMENT_BUILDER_IMPL, "<init>",
+                    "(ILjava/lang/String;ILjava/lang/Class;[Ljava/lang/Class;)V", false);
             mv.visitVarInsn(ASTORE, 1);
 
             //设置线程类型
             mv.visitVarInsn(ALOAD, 1);
             mv.visitInsn(model.isAsync() ? ICONST_1 : ICONST_0);
             mv.visitInsn(model.isUi() ? ICONST_1 : ICONST_0);
-            mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementBuilder", "setType", "(ZZ)Lcom/richard/interception/internal/IElementMultipartBuilder;", true);
+            mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_BUILDER, "setType",
+                    "(ZZ)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER, true);
             mv.visitInsn(POP);
 
             mv.visitVarInsn(ALOAD, 1);
             addModelAnnotation(mv, model);
-            mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementBuilder", "setAnnotation", "([Ljava/lang/Class;)Lcom/richard/interception/internal/IElementMultipartBuilder;", true);
+            mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_BUILDER, "setAnnotation",
+                    "([Ljava/lang/Class;)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER, true);
             mv.visitInsn(POP);
 
             //addAnnotationValue
 
-            setInterceptorAnnotationValues(model.getInterceptor(), mv, num -> mv.visitVarInsn(ALOAD, 1), num -> {
-                mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementBuilder", "addAnnotationValues", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Object;)Lcom/richard/interception/internal/IElementBuilder;", true);
-                mv.visitInsn(POP);
-            });
+            setInterceptorAnnotationValues(model.getInterceptor(), mv,
+                    num -> mv.visitVarInsn(ALOAD, 1), num -> {
+                        mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_BUILDER,
+                                "addAnnotationValues",
+                                "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Object;)" + L_INTERFACE_ELEMENT_BUILDER,
+                                true);
+                        mv.visitInsn(POP);
+                    });
 
             //addTypesAnnotationValue
 
@@ -313,22 +344,27 @@ public class ElementVisitor {
                 mv.visitVarInsn(ALOAD, 1);
                 VisitorUtils.visitIntPushStack(mv, num);
             }, num -> {
-                mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementBuilder", "addTypesAnnotationValues", "(ILjava/lang/Class;Ljava/lang/String;Ljava/lang/Object;)Lcom/richard/interception/internal/IElementMultipartBuilder;", true);
+                mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_BUILDER,
+                        "addTypesAnnotationValues",
+                        "(ILjava/lang/Class;Ljava/lang/String;Ljava/lang/Object;)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER,
+                        true);
                 mv.visitInsn(POP);
             });
 
 
             mv.visitVarInsn(ALOAD, 0);
             mv.visitLdcInsn(new Integer(model.getProcessId()));
-            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf",
+                    "(I)Ljava/lang/Integer;", false);
             mv.visitVarInsn(ALOAD, 1);
-            mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
+            mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put",
+                    "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
             mv.visitInsn(POP);
         }
     }
 
     private static void buildSurround(MethodVisitor mv, List<ElementModel> models) {
-        mv.visitTypeInsn(NEW, "com/richard/interception/internal/ElementMultipleBuilderImpl");
+        mv.visitTypeInsn(NEW, INTERFACE_ELEMENT_MULTIPART_BUILDER_IMPL);
         mv.visitInsn(DUP);
         {
             //初始化
@@ -353,7 +389,8 @@ public class ElementVisitor {
         }
         {
             //setTypeNames
-            mv.visitMethodInsn(INVOKESPECIAL, "com/richard/interception/internal/ElementMultipleBuilderImpl", "<init>", "([I[Ljava/lang/Class;)V", false);
+            mv.visitMethodInsn(INVOKESPECIAL, INTERFACE_ELEMENT_MULTIPART_BUILDER_IMPL, "<init>",
+                    "([I[Ljava/lang/Class;)V", false);
             mv.visitVarInsn(ASTORE, 1);
             mv.visitVarInsn(ALOAD, 1);
             VisitorUtils.visitIntPushStack(mv, models.size());
@@ -365,7 +402,8 @@ public class ElementVisitor {
                 mv.visitLdcInsn(model.getName());
                 mv.visitInsn(AASTORE);
             }
-            mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementMultipartBuilder", "setTypeNames", "([Ljava/lang/String;)Lcom/richard/interception/internal/IElementMultipartBuilder;", true);
+            mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_MULTIPART_BUILDER, "setTypeNames",
+                    "([Ljava/lang/String;)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER, true);
             mv.visitInsn(POP);
         }
         {
@@ -375,7 +413,9 @@ public class ElementVisitor {
                 mv.visitVarInsn(ALOAD, 1);
                 VisitorUtils.visitIntPushStack(mv, i);
                 addModelAnnotation(mv, model);
-                mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementMultipartBuilder", "addAnnotationToPosition", "(I[Ljava/lang/Class;)Lcom/richard/interception/internal/IElementMultipartBuilder;", true);
+                mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_MULTIPART_BUILDER,
+                        "addAnnotationToPosition",
+                        "(I[Ljava/lang/Class;)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER, true);
                 mv.visitInsn(POP);
             }
         }
@@ -388,16 +428,21 @@ public class ElementVisitor {
                     mv.visitVarInsn(ALOAD, 1);
                     VisitorUtils.visitIntPushStack(mv, finalI);
                 }, num -> {
-                    mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementMultipartBuilder", "addTypesAnnotationValues", "(ILjava/lang/Class;Ljava/lang/String;Ljava/lang/Object;)Lcom/richard/interception/internal/IElementMultipartBuilder;", true);
+                    mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_MULTIPART_BUILDER,
+                            "addTypesAnnotationValues",
+                            "(ILjava/lang/Class;Ljava/lang/String;Ljava/lang/Object;)" + L_INTERFACE_ELEMENT_MULTIPART_BUILDER,
+                            true);
                     mv.visitInsn(POP);
                 });
             }
         }
         mv.visitVarInsn(ALOAD, 0);
         mv.visitInsn(ICONST_0);
-        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;",
+                false);
         mv.visitVarInsn(ALOAD, 1);
-        mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
+        mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "put",
+                "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", true);
         mv.visitInsn(POP);
     }
 
@@ -413,7 +458,8 @@ public class ElementVisitor {
         }
     }
 
-    private static void loadAnnotationValue(MethodVisitor mv, String key, Object value, String type, String annotation, boolean fromDefault) {
+    private static void loadAnnotationValue(MethodVisitor mv, String key, Object value, String type,
+                                            String annotation, boolean fromDefault) {
         if (value == null) {
             return;
         }
@@ -429,13 +475,15 @@ public class ElementVisitor {
             }
             if (v) mv.visitInsn(ICONST_0);
             else mv.visitInsn(ICONST_1);
-            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf",
+                    "(Z)Ljava/lang/Boolean;", false);
         } else if (type.equals("int")) {
             VisitorUtils.log("int");
 
             int v = (int) value;
             VisitorUtils.visitIntPushStack(mv, v);
-            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf",
+                    "(I)Ljava/lang/Integer;", false);
         } else if (type.equals("float")) {
             VisitorUtils.log("float");
 
@@ -444,7 +492,8 @@ public class ElementVisitor {
                 v = v.replace("f", "");
             }
             mv.visitLdcInsn(new Float(v));
-            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(I)Ljava/lang/Float;", false);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(I)Ljava/lang/Float;",
+                    false);
         } else if (type.equals("long")) {
             VisitorUtils.log("long");
 
@@ -453,13 +502,15 @@ public class ElementVisitor {
                 v = v.replace("l", "");
             }
             mv.visitLdcInsn(new Long(v));
-            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", "(I)Ljava/lang/Long;", false);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", "(I)Ljava/lang/Long;",
+                    false);
         } else if (type.equals("double")) {
             VisitorUtils.log("double");
 
             String v = String.valueOf(value);
             mv.visitLdcInsn(new Double(v));
-            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(I)Ljava/lang/Double;", false);
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(I)Ljava/lang/Double;",
+                    false);
         } else if (type.equals("java.lang.Class")) {
             VisitorUtils.log("java.lang.Class");
 
@@ -556,7 +607,8 @@ public class ElementVisitor {
 
                     VisitorUtils.log("enum default[]");
 
-                    String[] v = value.toString().contains(",") ? value.toString().split(",") : new String[]{value.toString()};
+                    String[] v = value.toString().contains(",") ? value.toString().split(
+                            ",") : new String[]{value.toString()};
                     VisitorUtils.visitIntPushStack(mv, v.length);
                     String t = type.replace(".", "/");
 
@@ -586,8 +638,7 @@ public class ElementVisitor {
                                     VisitorUtils.visitEnum(mv, array);
                                     mv.visitInsn(AASTORE);
                                 } else {
-                                    throw new IllegalArgumentException(
-                                            "Incorrect enumeration!");
+                                    throw new IllegalArgumentException("Incorrect enumeration!");
                                 }
                             }
                         }
@@ -611,9 +662,11 @@ public class ElementVisitor {
         }
     }
 
-    private static void buildMethod(String runnerOwner, String elementOwner, String owner, MethodVisitor mv, List<ElementModel> models) {
+    private static void buildMethod(String runnerOwner, String elementOwner, String owner,
+                                    MethodVisitor mv, List<ElementModel> models) {
         //switch case 需要排序
-        Collections.sort(models, (o1, o2) -> Integer.valueOf(o1.getProcessId()).compareTo(o2.getProcessId()));
+        Collections.sort(models,
+                (o1, o2) -> Integer.valueOf(o1.getProcessId()).compareTo(o2.getProcessId()));
         mv.visitVarInsn(ILOAD, 1);
         int[] processIds = new int[models.size()];
         Label[] labels = new Label[models.size()];
@@ -648,20 +701,23 @@ public class ElementVisitor {
                         VisitorUtils.visitCheckCast(mv, type);
                     }
                 }
-                mv.visitMethodInsn(INVOKESTATIC, owner, model.getAccessName(), "(L" + owner + ";" + desc.toString() + ")Ljava/lang/Object;", false);
+                mv.visitMethodInsn(INVOKESTATIC, owner, model.getAccessName(),
+                        "(L" + owner + ";" + desc.toString() + ")Ljava/lang/Object;", false);
                 mv.visitInsn(ARETURN);
             } else {
                 mv.visitVarInsn(ALOAD, 3);
                 mv.visitInsn(ICONST_0);
                 mv.visitInsn(AALOAD);
                 VisitorUtils.visitCheckCast(mv, model.getReturnType());
-                mv.visitMethodInsn(INVOKESTATIC, owner, model.getAccessName(), model.getGetAndSet()[0], false);
+                mv.visitMethodInsn(INVOKESTATIC, owner, model.getAccessName(),
+                        model.getGetAndSet()[0], false);
                 mv.visitInsn(ARETURN);
                 mv.visitLabel(ifeq);
                 mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
                 mv.visitVarInsn(ALOAD, 0);
                 mv.visitFieldInsn(GETFIELD, elementOwner, "_local", "L" + owner + ";");
-                mv.visitMethodInsn(INVOKESTATIC, owner, model.getAccessName(), model.getGetAndSet()[1], false);
+                mv.visitMethodInsn(INVOKESTATIC, owner, model.getAccessName(),
+                        model.getGetAndSet()[1], false);
                 mv.visitInsn(ARETURN);
             }
         }
@@ -675,7 +731,9 @@ public class ElementVisitor {
         void doWhat(int num);
     }
 
-    private static void setInterceptorAnnotationValues(List<InterceptionModel.InterceptorsBean> model, MethodVisitor mv, Operate doStart, Operate doEnd) {
+    private static void setInterceptorAnnotationValues(
+            List<InterceptionModel.InterceptorsBean> model, MethodVisitor mv, Operate doStart,
+            Operate doEnd) {
         for (int j = 0; j < model.size(); j++) {
             InterceptionModel.InterceptorsBean bean = model.get(j);
             if (bean.getValues() != null && bean.getDefaultX() != null && bean.getDefaultX().size() > 0) {

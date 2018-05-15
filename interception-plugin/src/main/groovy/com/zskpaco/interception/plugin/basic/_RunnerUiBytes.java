@@ -5,6 +5,7 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
+import static com.zskpaco.interception.plugin.bean.TypeNames.*;
 import static org.objectweb.asm.Opcodes.*;
 
 public class _RunnerUiBytes {
@@ -15,18 +16,23 @@ public class _RunnerUiBytes {
         FieldVisitor fv;
         MethodVisitor mv;
 
-        cw.visit(52, ACC_PUBLIC + ACC_SUPER, owner, null, "java/lang/Object", new String[]{"java/lang/Runnable"});
+        cw.visit(52, ACC_PUBLIC + ACC_SUPER, owner, null, "java/lang/Object",
+                new String[]{"java/lang/Runnable"});
 
         {
-            fv = cw.visitField(ACC_PRIVATE + ACC_FINAL, "builder", "Lcom/richard/interception/internal/IElementBuilder;", null, null);
+            fv = cw.visitField(ACC_PRIVATE + ACC_FINAL, "builder", L_INTERFACE_ELEMENT_BUILDER,
+                    null, null);
             fv.visitEnd();
         }
         {
-            fv = cw.visitField(ACC_PRIVATE + ACC_FINAL, "buildLoader", "Lcom/richard/interception/internal/IElementExecutionLoader;", null, null);
+            fv = cw.visitField(ACC_PRIVATE + ACC_FINAL, "buildLoader",
+                    L_INTERFACE_ELEMENT_EXECUTION_LOADER, null, null);
             fv.visitEnd();
         }
         {
-            mv = cw.visitMethod(ACC_PUBLIC, "<init>", "(Lcom/richard/interception/internal/IElementBuilder;Lcom/richard/interception/internal/IElementExecutionLoader;)V", null, null);
+            mv = cw.visitMethod(ACC_PUBLIC, "<init>",
+                    "(" + L_INTERFACE_ELEMENT_BUILDER + L_INTERFACE_ELEMENT_EXECUTION_LOADER + ")V",
+                    null, null);
             mv.visitCode();
             Label l0 = new Label();
             mv.visitLabel(l0);
@@ -38,13 +44,13 @@ public class _RunnerUiBytes {
             mv.visitLineNumber(17, l1);
             mv.visitVarInsn(ALOAD, 0);
             mv.visitVarInsn(ALOAD, 1);
-            mv.visitFieldInsn(PUTFIELD, owner, "builder", "Lcom/richard/interception/internal/IElementBuilder;");
+            mv.visitFieldInsn(PUTFIELD, owner, "builder", L_INTERFACE_ELEMENT_BUILDER);
             Label l2 = new Label();
             mv.visitLabel(l2);
             mv.visitLineNumber(18, l2);
             mv.visitVarInsn(ALOAD, 0);
             mv.visitVarInsn(ALOAD, 2);
-            mv.visitFieldInsn(PUTFIELD, owner, "buildLoader", "Lcom/richard/interception/internal/IElementExecutionLoader;");
+            mv.visitFieldInsn(PUTFIELD, owner, "buildLoader", L_INTERFACE_ELEMENT_EXECUTION_LOADER);
             Label l3 = new Label();
             mv.visitLabel(l3);
             mv.visitLineNumber(19, l3);
@@ -61,10 +67,12 @@ public class _RunnerUiBytes {
             mv.visitLabel(l0);
             mv.visitLineNumber(23, l0);
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitFieldInsn(GETFIELD, owner, "builder", "Lcom/richard/interception/internal/IElementBuilder;");
+            mv.visitFieldInsn(GETFIELD, owner, "builder", L_INTERFACE_ELEMENT_BUILDER);
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitFieldInsn(GETFIELD, owner, "buildLoader", "Lcom/richard/interception/internal/IElementExecutionLoader;");
-            mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "_current", "(Lcom/richard/interception/internal/IElementBuilder;Lcom/richard/interception/internal/IElementExecutionLoader;)Ljava/lang/Object;", false);
+            mv.visitFieldInsn(GETFIELD, owner, "buildLoader", L_INTERFACE_ELEMENT_EXECUTION_LOADER);
+            mv.visitMethodInsn(INVOKESTATIC, runnerOwner, "_current",
+                    "(" + L_INTERFACE_ELEMENT_BUILDER + L_INTERFACE_ELEMENT_EXECUTION_LOADER + ")Ljava/lang/Object;",
+                    false);
             mv.visitInsn(POP);
             Label l1 = new Label();
             mv.visitLabel(l1);

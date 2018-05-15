@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Author: Richard paco
  * Date: 2018/4/27
  */
-public class ElementMultipleBuilderImpl implements IElementMultipartBuilder {
+public class ElementMultipartBuilderImpl implements IElementMultipartBuilder {
 
     private int[] codes;
     private Class<?>[] types;
@@ -24,7 +24,7 @@ public class ElementMultipleBuilderImpl implements IElementMultipartBuilder {
     private VariableElement[] variableElements;
     private Map<String, Object> variableAnnotationValues = new ConcurrentHashMap<>();
 
-    public ElementMultipleBuilderImpl(int[] codes, Class<?>[] types) {
+    public ElementMultipartBuilderImpl(int[] codes, Class<?>[] types) {
         this.codes = codes;
         this.types = types;
     }

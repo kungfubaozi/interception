@@ -10,6 +10,8 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import static com.zskpaco.interception.plugin.bean.TypeNames.*;
+
 import java.util.*;
 
 public class ClassHandler extends ClassVisitor implements Opcodes {
@@ -36,7 +38,8 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
 
     private MethodVisitor mv;
 
-    public ClassHandler(ClassWriter cw, String runnerOwner, String path, ClassNode classNode, InterceptionModel model) {
+    public ClassHandler(ClassWriter cw, String runnerOwner, String path, ClassNode classNode,
+                        InterceptionModel model) {
         super(ASM6, cw);
         this.path = path;
         this.runnerOwner = runnerOwner;
@@ -45,7 +48,8 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
     }
 
     @Override
-    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+    public void visit(int version, int access, String name, String signature, String superName,
+                      String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
         VisitorUtils.log(":interceptor:build %s", name.replace("/", "."));
 
@@ -75,9 +79,11 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                 FieldNode fieldNode = (FieldNode) node;
                 int processId = (fieldNode.access + fieldNode.desc + fieldNode.name + fieldNode.signature).hashCode();
                 if (fieldNode.invisibleAnnotations != null) {
-                    ElementModel bean = getMatchModel(new Surround(fieldNode.name, fieldNode.desc), 1, fieldNode.invisibleAnnotations);
+                    ElementModel bean = getMatchModel(new Surround(fieldNode.name, fieldNode.desc),
+                            1, fieldNode.invisibleAnnotations);
                     if (bean != null && bean != EMPTY_ELEMENT_MODEL) {
-                        String accessName = "access$" + fieldNode.name + "$" + (processId < 0 ? Math.abs(processId) : processId);
+                        String accessName = "access$" + fieldNode.name + "$" + (processId < 0 ? Math.abs(
+                                processId) : processId);
 
                         String[] getset = new String[2];
 
@@ -89,8 +95,10 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                         //set
                         String set = "(L" + name + ";" + fieldNode.desc + ")Ljava/lang/Object;";
                         getset[0] = set;
-                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC, accessName, set,
-                                fieldNode.signature == null ? null : "(L" + name + ";" + fieldNode.signature + ")Ljava/lang/Object;", null);
+                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + ACC_SYNTHETIC, accessName,
+                                set,
+                                fieldNode.signature == null ? null : "(L" + name + ";" + fieldNode.signature + ")Ljava/lang/Object;",
+                                null);
                         mv.visitVarInsn(ALOAD, 0);
                         VisitorUtils.visitVarLoadInsn(mv, fieldNode.desc, 1);
                         mv.visitFieldInsn(PUTFIELD, name, fieldNode.name, fieldNode.desc);
@@ -102,8 +110,10 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                         //get
                         String get = "(L" + name + ";)" + fieldNode.desc;
                         getset[1] = get;
-                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC, accessName, get,
-                                fieldNode.signature == null ? null : "(L" + name + ";)" + fieldNode.signature, null);
+                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + ACC_SYNTHETIC, accessName,
+                                get,
+                                fieldNode.signature == null ? null : "(L" + name + ";)" + fieldNode.signature,
+                                null);
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitFieldInsn(GETFIELD, name, fieldNode.name, fieldNode.desc);
                         VisitorUtils.visitReturn(mv, fieldNode.desc);
@@ -130,19 +140,22 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                     ElementModel bean = getMatchModel(null, 2, methodNode.invisibleAnnotations);
                     ElementModel variable = null;
                     if (methodNode.invisibleLocalVariableAnnotations != null) {
-                        variable = getMatchModel(null, 3, methodNode.invisibleLocalVariableAnnotations);
+                        variable = getMatchModel(null, 3,
+                                methodNode.invisibleLocalVariableAnnotations);
                     }
                     if (bean != null && bean.getInterceptor().size() > 0) {
 
                         if ((bean.isUi() || bean.isAsync()) && !methodNode.desc.endsWith("V")) {
-                            throw new IllegalArgumentException("The method of using @Async @UiThread can not contain the return value.");
+                            throw new IllegalArgumentException(
+                                    "The method of using @Async @UiThread can not contain the return value.");
                         }
 
                         if (variable != null && variable.getInterceptor() != null) {
                             bean.setSubInterceptor(variable.getInterceptor());
                         }
 
-                        String accessName = ("access$" + methodNode.name + "$" + processId).replace("-", "x");
+                        String accessName = ("access$" + methodNode.name + "$" + processId).replace(
+                                "-", "x");
 
                         bean.setAccessName(accessName);
                         bean.setProcessId(processId);
@@ -157,10 +170,16 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                             returnNull = true;
                             desc = desc.substring(0, desc.length() - 1) + "Ljava/lang/Object;";
                         }
-                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC, accessName, desc,
-                                methodNode.signature == null ? null : "(L" + name + ";" + (returnNull ? methodNode.signature.substring(1, methodNode.signature.length() - 1) + "Ljava/lang/Object;" : methodNode.signature.substring(1)), null);
+                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + ACC_SYNTHETIC, accessName,
+                                desc,
+                                methodNode.signature == null ? null : "(L" + name + ";" + (returnNull ? methodNode.signature.substring(
+                                        1,
+                                        methodNode.signature.length() - 1) + "Ljava/lang/Object;" : methodNode.signature.substring(
+                                        1)), null);
                         VisitorUtils.visitVarLoadInsn(mv, desc);
-                        mv.visitMethodInsn(INVOKESPECIAL, name, (methodNode.name + "$" + processId).replace("-", "x"), methodNode.desc, false);
+                        mv.visitMethodInsn(INVOKESPECIAL, name,
+                                (methodNode.name + "$" + processId).replace("-", "x"),
+                                methodNode.desc, false);
                         if (returnNull) {
                             mv.visitInsn(ACONST_NULL);
                             mv.visitInsn(ARETURN);
@@ -187,7 +206,8 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
         }
 
         if (isSurround) {
-            mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC, "_init", "(Ljava/lang/Object;)L" + name + ";", null, null);
+            mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + ACC_SYNTHETIC, "_init",
+                    "(Ljava/lang/Object;)L" + name + ";", null, null);
             mv.visitCode();
             Label l0 = new Label();
             mv.visitLabel(l0);
@@ -206,7 +226,8 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
             mv.visitVarInsn(ALOAD, 1);
             mv.visitVarInsn(ALOAD, 2);
             mv.visitVarInsn(ALOAD, 0);
-            mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementLoader", "init", "(Ljava/lang/Object;Ljava/lang/Object;)V", true);
+            mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_LOADER, "init",
+                    "(Ljava/lang/Object;Ljava/lang/Object;)V", true);
             Label l3 = new Label();
             mv.visitLabel(l3);
             mv.visitVarInsn(ALOAD, 2);
@@ -219,7 +240,8 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
     }
 
     @Override
-    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+    public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
+                                     String[] exceptions) {
         String newName = name;
         for (Element element : methodSet) {
             if (element.key.equals(name + descriptor)) {
@@ -227,14 +249,17 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                 mv = cv.visitMethod(access, name, descriptor, signature, exceptions);
                 mv.visitCode();
                 mv.visitVarInsn(ALOAD, 0);
-                mv.visitFieldInsn(GETFIELD, ClassHandler.this.name, "$_Element_Loader", "Lcom/richard/interception/internal/IElementLoader;");
+                mv.visitFieldInsn(GETFIELD, ClassHandler.this.name, "$_Element_Loader",
+                        L_INTERFACE_ELEMENT_LOADER);
                 mv.visitLdcInsn(new Integer(element.processId));
 
                 Type[] types = Type.getArgumentTypes(descriptor);
                 VisitorUtils.visitIntPushStack(mv, types.length);
                 mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
                 VisitorUtils.visitArgumentsLoadInsn2(mv, types);
-                mv.visitMethodInsn(INVOKEINTERFACE, "com/richard/interception/internal/IElementLoader", "startup", "(I[Ljava/lang/Object;)Ljava/lang/Object;", true);
+                mv.visitMethodInsn(INVOKEINTERFACE,
+                        INTERFACE_ELEMENT_LOADER, "startup",
+                        "(I[Ljava/lang/Object;)Ljava/lang/Object;", true);
                 String d = Type.getReturnType(descriptor).getDescriptor();
                 VisitorUtils.visitCheckCast(mv, d);
                 VisitorUtils.visitReturn(mv, d);
@@ -245,7 +270,8 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
             }
         }
         MethodVisitor mv = cv.visitMethod(access, newName, descriptor, signature, exceptions);
-        mv = new MethodTransformer(ClassHandler.this.name, mv, access, name, descriptor, surroundFieldSet, modelMap.size() > 0, elementOwner);
+        mv = new MethodTransformer(ClassHandler.this.name, mv, access, name, descriptor,
+                surroundFieldSet, modelMap.size() > 0, elementOwner);
         return mv;
     }
 
@@ -253,10 +279,13 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
     public void visitEnd() {
         super.visitEnd();
         if (modelMap.size() > 0) {
-            ElementVisitor.visit(runnerOwner, isSurround, path, name, modelMap, elementOwner, loadName, loadRep);
+            ElementVisitor.visit(runnerOwner, isSurround, path, name, modelMap, elementOwner,
+                    loadName, loadRep);
 
             if (!isSurround) {
-                FieldVisitor fv = cv.visitField(ACC_PRIVATE + ACC_FINAL, "$_Element_Loader", "Lcom/richard/interception/internal/IElementLoader;", null, null);
+                FieldVisitor fv = cv.visitField(ACC_PRIVATE + ACC_FINAL + ACC_SYNTHETIC,
+                        "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER,
+                        null, null);
                 fv.visitEnd();
             }
         }
@@ -273,7 +302,8 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
         model.setType(type);
         for (Object node : invisibleAnnotations) {
             AnnotationNode annotationNode = (AnnotationNode) node;
-            if (annotationNode.desc.equals("Lcom/richard/interception/Surround;") && !isSurround && type != 2 && type != 3) {
+            if (annotationNode.desc.equals(
+                    L_ANNOTATION_SURROUND) && !isSurround && type != 2 && type != 3) {
                 if (type == 1) {
                     surroundFieldSet.add(name);
                     return EMPTY_ELEMENT_MODEL;
@@ -282,14 +312,15 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                     return null;
                 }
             }
-            if (annotationNode.desc.equals("Lcom/richard/interception/Async;")) {
+            if (annotationNode.desc.equals(L_ANNOTATION_ASYNC)) {
                 model.setAsync(true);
             }
-            if (annotationNode.desc.equals("Lcom/richard/interception/UiThread;")) {
+            if (annotationNode.desc.equals(L_ANNOTATION_UI)) {
                 model.setUi(true);
             }
             if (model.isAsync() && model.isUi()) {
-                throw new IllegalArgumentException("@Async @UiThread cannot be added at the same time.");
+                throw new IllegalArgumentException(
+                        "@Async @UiThread cannot be added at the same time.");
             }
             for (InterceptionModel.InterceptorsBean bean : this.model.getInterceptors()) {
                 if (annotationNode.desc.equals("L" + bean.getAnnotation() + ";")) {

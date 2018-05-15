@@ -1,6 +1,10 @@
 apply plugin: 'java-library'
+if (!DEBUG){
+    apply plugin: 'com.github.dcendents.android-maven'
+} else {
+    apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
+}
 
-apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.zskpaco.interception'
 
 dependencies {

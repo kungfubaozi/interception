@@ -13,7 +13,7 @@ public class ModuleRunnerWrite {
     private static final String ELEMENT_ASYNC = "$ElementRunner$Async";
 
     public static String write(String basePath, InterceptionModel model) {
-        if (model.getModule() == null) {
+        if (model.getModule() == null || model.getRoot() == null) {
             return null;
         }
         String moduleName = model.getModule().replace("-", "").replace("_", "").toUpperCase();

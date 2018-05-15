@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'interception-android'
+//apply plugin: 'interception-android'
 
 android {
     compileSdkVersion 27

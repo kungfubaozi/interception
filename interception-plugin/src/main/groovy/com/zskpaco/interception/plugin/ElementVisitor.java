@@ -27,8 +27,10 @@ public class ElementVisitor {
                              Map<Integer, List<ElementModel>> modelMap, String elementOwner,
                              String loadName, String name) {
         if (runnerOwner == null) {
+            VisitorUtils.log("runner owner null");
             return;
         }
+        VisitorUtils.log("runner owner %s", runnerOwner);
         ClassWriter cw = new ClassWriter(1);
         FieldVisitor fv;
         MethodVisitor mv;

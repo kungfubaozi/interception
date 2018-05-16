@@ -13,12 +13,13 @@ public class ModuleRunnerWrite {
     private static final String ELEMENT_ASYNC = "$ElementRunner$Async";
 
     public static String write(String basePath, InterceptionModel model) {
-        if (model.getModule() == null || model.getRoot() == null) {
-            return null;
+        String moduleName = model.getModule();
+        String root = model.getRoot();
+        if (root == null) {
+            root = "com/zskpaco/interception/" + moduleName + "/runner";
+        } else {
+            root = root.replace(".", "/");
         }
-        String moduleName = model.getModule().replace("-", "").replace("_", "").toUpperCase();
-        model.setModule(moduleName);
-        String root = model.getRoot().replace(".", "/");
         String local = root + "/" + moduleName;
         File file = new File(basePath + root);
         if (!file.exists()) {

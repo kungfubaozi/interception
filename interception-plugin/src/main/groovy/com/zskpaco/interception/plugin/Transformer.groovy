@@ -24,7 +24,7 @@ import org.objectweb.asm.tree.ClassNode
 class Transformer extends Transform {
 
     private Project project
-    private String runnerOwner
+    public static String runnerOwner
 
     public static PluginConfig config = new PluginConfig()
 
@@ -83,7 +83,10 @@ class Transformer extends Transform {
                 model.interceptors = model1.interceptors
             }
         }
-
+        if (model.getModule() == null) {
+            model.module = project.name
+        }
+        model.setModule(model.getModule().replace("-", "").replace("_", "").toUpperCase())
         transformInvocation.inputs.each { TransformInput input ->
             input.directoryInputs.each { DirectoryInput directoryInput ->
                 if (directoryInput.file.isDirectory()) {
@@ -96,10 +99,6 @@ class Transformer extends Transform {
                             ClassReader cr = new ClassReader(file.bytes)
                             ClassNode classNode = new ClassNode()
                             cr.accept(classNode, 0)
-
-                            if (runnerOwner == null && moduleFile.exists()) {
-                                runnerOwner = ModuleRunnerWrite.write(file.getAbsolutePath().replace(classNode.name, "").replace(".class", ""), model)
-                            }
 
                             ClassWriter cw = new ClassWriter(cr, ClassWriter.COMPUTE_MAXS)
                             ClassHandler classHandler = new ClassHandler(cw, runnerOwner, file.getAbsolutePath(), classNode, model)
@@ -120,16 +119,16 @@ class Transformer extends Transform {
 
             }
 
-            input.jarInputs.each { JarInput jarInput ->
-                def jarName = jarInput.name
-                def md5Name = DigestUtils.md5Hex(jarInput.file.getAbsolutePath())
-                if (jarName.endsWith(".jar")) {
-                    jarName = jarName.substring(0, jarName.length() - 4)
-                }
-                def dest = transformInvocation.outputProvider.getContentLocation(jarName + md5Name,
-                        jarInput.contentTypes, jarInput.scopes, Format.JAR)
-                FileUtils.copyFile(jarInput.file, dest)
-            }
+//            input.jarInputs.each { JarInput jarInput ->
+//                def jarName = jarInput.name
+//                def md5Name = DigestUtils.md5Hex(jarInput.file.getAbsolutePath())
+//                if (jarName.endsWith(".jar")) {
+//                    jarName = jarName.substring(0, jarName.length() - 4)
+//                }
+//                def dest = transformInvocation.outputProvider.getContentLocation(jarName + md5Name,
+//                        jarInput.contentTypes, jarInput.scopes, Format.JAR)
+//                FileUtils.copyFile(jarInput.file, dest)
+//            }
 
         }
     }

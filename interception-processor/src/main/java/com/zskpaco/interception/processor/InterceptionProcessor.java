@@ -49,7 +49,7 @@ public class InterceptionProcessor extends AbstractProcessor {
             moduleName = module.get("moduleName");
         }
 
-        System.out.println("module=" + moduleName);
+        //System.out.println("module=" + moduleName);
 
         path = System.getProperty("user.dir");
 
@@ -59,15 +59,7 @@ public class InterceptionProcessor extends AbstractProcessor {
         }
         file = new File(path + "/.plugin/module-" + moduleName + ".json");
         if (file.exists()) {
-            try {
-                FileInputStream inputStream = new FileInputStream(file);
-                String jsonStr = getFileStr(inputStream);
-                InterceptionModel interceptionModel = gson.fromJson(jsonStr,
-                        InterceptionModel.class);
-                this.root = interceptionModel.getRoot();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            file.delete();
         }
     }
 
@@ -236,9 +228,6 @@ public class InterceptionProcessor extends AbstractProcessor {
                         }
                     }
                 }
-            } else {
-                //无拦截存在就删除json文件防止出错
-                file.delete();
             }
 
         }

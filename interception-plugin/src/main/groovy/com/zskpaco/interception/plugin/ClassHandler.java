@@ -1,5 +1,6 @@
 package com.zskpaco.interception.plugin;
 
+import com.zskpaco.interception.plugin.basic.ModuleRunnerWrite;
 import com.zskpaco.interception.plugin.bean.ElementModel;
 import com.zskpaco.interception.plugin.bean.InterceptionModel;
 import com.zskpaco.interception.plugin.utils.VisitorUtils;
@@ -257,8 +258,7 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                 VisitorUtils.visitIntPushStack(mv, types.length);
                 mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
                 VisitorUtils.visitArgumentsLoadInsn2(mv, types);
-                mv.visitMethodInsn(INVOKEINTERFACE,
-                        INTERFACE_ELEMENT_LOADER, "startup",
+                mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_LOADER, "startup",
                         "(I[Ljava/lang/Object;)Ljava/lang/Object;", true);
                 String d = Type.getReturnType(descriptor).getDescriptor();
                 VisitorUtils.visitCheckCast(mv, d);
@@ -279,15 +279,22 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
     public void visitEnd() {
         super.visitEnd();
         if (modelMap.size() > 0) {
+
+            if (runnerOwner == null) {
+                VisitorUtils.log("module runner create class");
+                runnerOwner = ModuleRunnerWrite.write(
+                        path.replace(classNode.name, "").replace(".class", ""), model);
+            }
+
             ElementVisitor.visit(runnerOwner, isSurround, path, name, modelMap, elementOwner,
                     loadName, loadRep);
 
             if (!isSurround) {
                 FieldVisitor fv = cv.visitField(ACC_PRIVATE + ACC_FINAL + ACC_SYNTHETIC,
-                        "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER,
-                        null, null);
+                        "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER, null, null);
                 fv.visitEnd();
             }
+
         }
     }
 

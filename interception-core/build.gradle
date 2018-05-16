@@ -1,9 +1,7 @@
 apply plugin: 'java-library'
 if (DEBUG == "false"){
-    println("enter 2")
     apply plugin: 'com.github.dcendents.android-maven'
 } else {
-    println("enter 1")
     apply from: rootProject.file('gradle/gradle-mvn-push.gradle')
 }
 

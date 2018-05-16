@@ -1,4 +1,4 @@
-package com.zskpaco.interception.test.extension;
+package com.zskpaco.interception.test.interceptor;
 
 import com.zskpaco.interception.AnnotationInterceptor;
 import com.zskpaco.interception.Element;

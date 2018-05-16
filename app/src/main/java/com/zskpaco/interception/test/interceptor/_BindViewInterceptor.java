@@ -1,7 +1,6 @@
-package com.zskpaco.interception.test.extension;
+package com.zskpaco.interception.test.interceptor;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.view.View;
 
 import com.zskpaco.interception.AnnotationInterceptor;

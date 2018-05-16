@@ -61,13 +61,26 @@ class Transformer extends Transform {
             Transformer.config = config
         }
 
+        Gson gson = new Gson()
+
         InterceptionModel model = new InterceptionModel()
         String modulePath = System.getProperty("user.dir") + "/.plugin/module-" + project.getName() + ".json"
+        String allPath = System.getProperty("user.dir") + "/.plugin/module-all.json"
         File moduleFile = new File(modulePath)
         if (moduleFile.exists()) {
             String str = getFileStr(moduleFile)
             if (!str.isEmpty()) {
-                model = new Gson().fromJson(str, InterceptionModel.class)
+                model = gson.fromJson(str, InterceptionModel.class)
+            }
+        }
+        moduleFile = new File(allPath)
+        if (!moduleFile.exists()) {
+            throw new RuntimeException("Before build project, please execute buildModules task.")
+        } else {
+            String str = getFileStr(moduleFile)
+            if (!str.isEmpty()) {
+                InterceptionModel model1 = gson.fromJson(str, InterceptionModel.class)
+                model.interceptors = model1.interceptors
             }
         }
 
@@ -121,7 +134,7 @@ class Transformer extends Transform {
         }
     }
 
-    private String getFileStr(File path) {
+    static String getFileStr(File path) {
         try {
             return getFileStr1(new FileInputStream(path))
         } catch (Throwable e) {

@@ -1,23 +1,19 @@
-package com.zskpaco.interception.test.extension;
+package com.zskpaco.apptest;
 
 import com.zskpaco.interception.AnnotationInterceptor;
 import com.zskpaco.interception.Element;
 import com.zskpaco.interception.Interceptor;
-import com.zskpaco.interception.TypeElement;
 
 import java.util.Map;
 
 /**
  * Author: Richard paco
- * Date: 2018/5/9
+ * Date: 2018/5/15
  */
 @Interceptor
-public class _LayoutInterceptor implements AnnotationInterceptor<Layout> {
+public class LoggerInterceptor implements AnnotationInterceptor<Logger> {
     @Override
     public Object intercept(Element element, Map<String, Object> annotationValues) {
-        if (element instanceof TypeElement) {
-            
-        }
         return null;
     }
 }

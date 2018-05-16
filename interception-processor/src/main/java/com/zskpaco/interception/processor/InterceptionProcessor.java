@@ -48,6 +48,9 @@ public class InterceptionProcessor extends AbstractProcessor {
         } else {
             moduleName = module.get("moduleName");
         }
+
+        System.out.println("module=" + moduleName);
+
         path = System.getProperty("user.dir");
 
         file = new File(path + "/.plugin");

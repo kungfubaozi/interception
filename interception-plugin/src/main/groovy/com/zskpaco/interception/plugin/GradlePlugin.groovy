@@ -28,6 +28,7 @@ class GradlePlugin implements Plugin<Project> {
             if (map != null) {
                 map.put("moduleName", project.getName())
             }
+
             //注册
             if (isAndroidApplication) {
                 AppExtension android = project.extensions.getByType(AppExtension)
@@ -41,5 +42,6 @@ class GradlePlugin implements Plugin<Project> {
         } else {
             throw new IllegalArgumentException("Interception plugin must add in android application or library!")
         }
+
     }
 }

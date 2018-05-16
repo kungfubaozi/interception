@@ -26,6 +26,9 @@ public class ElementVisitor {
     public static void visit(String runnerOwner, boolean isSurround, String path, String owner,
                              Map<Integer, List<ElementModel>> modelMap, String elementOwner,
                              String loadName, String name) {
+        if (runnerOwner == null) {
+            return;
+        }
         ClassWriter cw = new ClassWriter(1);
         FieldVisitor fv;
         MethodVisitor mv;

@@ -1,6 +1,4 @@
-package com.zskpaco.interception.test.extension;
-
-import android.support.annotation.LayoutRes;
+package com.zskpaco.apptest;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,12 +7,10 @@ import java.lang.annotation.Target;
 
 /**
  * Author: Richard paco
- * Date: 2018/5/8
+ * Date: 2018/5/15
+ * Desc:
  */
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
-public @interface Layout {
-
-    @LayoutRes int value();
-    
+public @interface Logger {
 }

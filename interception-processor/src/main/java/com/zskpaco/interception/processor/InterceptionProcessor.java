@@ -65,8 +65,6 @@ public class InterceptionProcessor extends AbstractProcessor {
                 InterceptionModel interceptionModel = gson.fromJson(jsonStr,
                         InterceptionModel.class);
                 this.root = interceptionModel.getRoot();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -221,21 +219,28 @@ public class InterceptionProcessor extends AbstractProcessor {
                     }
                 }
             }
-            FileWriter writer = null;
-            try {
-                writer = new FileWriter(file);
-                writer.write(new Gson().toJson(model));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+
+            if (model.getInterceptors().size() > 0) {
+                FileWriter writer = null;
+                try {
+                    writer = new FileWriter(file);
+                    writer.write(new Gson().toJson(model));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (writer != null) {
+                        try {
+                            writer.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
+            } else {
+                //无拦截存在就删除json文件防止出错
+                file.delete();
             }
+
         }
         return true;
     }

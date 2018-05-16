@@ -28,7 +28,7 @@ public class MethodTransformer extends GeneratorAdapter {
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor,
                                 boolean isInterface) {
-        if (opcode == INVOKESTATIC && owner.equals(ASSIGNMENT) && name.equals("visit")) {
+        if (opcode == INVOKESTATIC && owner.equals(ASSIGNMENT) && name.equals("initialize")) {
             init();
         } else {
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);

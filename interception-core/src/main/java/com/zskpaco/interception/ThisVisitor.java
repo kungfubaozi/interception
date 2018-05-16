@@ -1,6 +1,6 @@
 package com.zskpaco.interception;
 
-public class TypeVisitor {
+public class ThisVisitor {
 
     /**
      * 初始化

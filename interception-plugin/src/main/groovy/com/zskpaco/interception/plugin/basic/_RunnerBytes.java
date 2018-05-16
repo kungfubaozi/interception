@@ -285,7 +285,7 @@ public class _RunnerBytes {
             mv.visitJumpInsn(IF_ICMPGE, l7);
             Label l9 = new Label();
             mv.visitLabel(l9);
-            mv.visitFieldInsn(GETSTATIC, owner, "FACTORY", L_INTERFACE_ELEMENT_CONTROLLER);
+            mv.visitFieldInsn(GETSTATIC, owner, "FACTORY", L_INTERFACE_ELEMENT_INSTANCE_LOADER);
             mv.visitVarInsn(ALOAD, 3);
             Label l10 = new Label();
             mv.visitLabel(l10);
@@ -304,7 +304,7 @@ public class _RunnerBytes {
             mv.visitVarInsn(ALOAD, 5);
             mv.visitVarInsn(ALOAD, 3);
             mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_CONTROLLER, "getElement",
-                    "()Lcom/richard/interception/Element;", true);
+                    "()" + L_INTERFACE_ELEMENT, true);
             mv.visitVarInsn(ALOAD, 3);
             mv.visitVarInsn(ALOAD, 3);
             Label l13 = new Label();

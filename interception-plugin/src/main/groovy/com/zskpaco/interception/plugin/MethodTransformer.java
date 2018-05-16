@@ -57,7 +57,7 @@ public class MethodTransformer extends GeneratorAdapter {
         mv.visitFieldInsn(GETFIELD, owner, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
         mv.visitVarInsn(ALOAD, 0);
         mv.visitInsn(ACONST_NULL);
-        mv.visitMethodInsn(INVOKEINTERFACE, L_INTERFACE_ELEMENT_LOADER, "init",
+        mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_LOADER, "init",
                 "(Ljava/lang/Object;Ljava/lang/Object;)V", true);
 
     }

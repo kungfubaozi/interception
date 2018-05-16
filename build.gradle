@@ -7,7 +7,7 @@ if(DEBUG == "true"){
 
 buildscript {
 
-    ext.test_version = '0.6.4.0'
+    ext.test_version = '0.6.4.1'
 
     repositories {
         google()

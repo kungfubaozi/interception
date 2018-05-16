@@ -175,6 +175,7 @@ public class InterceptionProcessor extends AbstractProcessor {
                     }
 
                     DeclaredType tempMirror = null;
+                    int count = 0;
                     int size = typeElement.getEnclosedElements().size();
                     for (int i = 0; i < size; i++) {
                         Element e = typeElement.getEnclosedElements().get(i);
@@ -207,7 +208,11 @@ public class InterceptionProcessor extends AbstractProcessor {
                                     }
                                 }
                             }
+                            count++;
                         }
+                    }
+                    if (count == 0) {
+                        throw new IllegalArgumentException("The number of valid fields is 0!");
                     }
                 }
             }

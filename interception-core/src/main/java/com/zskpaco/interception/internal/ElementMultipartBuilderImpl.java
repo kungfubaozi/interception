@@ -14,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ElementMultipartBuilderImpl implements IElementMultipartBuilder {
 
+    public static final String TAG = ElementMultipartBuilderImpl.class.getSimpleName();
+
     private int[] codes;
     private Class<?>[] types;
     private String[] names;
@@ -39,8 +41,7 @@ public class ElementMultipartBuilderImpl implements IElementMultipartBuilder {
     public IElementMultipartBuilder addAnnotationToPosition(int position,
                                                             Class<? extends Annotation>[] annotations) {
         variableAnnotation = annotations[0];
-        Map<String, Object> map = typesAnnotationValues.get(
-                position);
+        Map<String, Object> map = typesAnnotationValues.get(position);
         if (map == null) {
             map = new ConcurrentHashMap<>();
             typesAnnotationValues.put(position, map);
@@ -63,42 +64,40 @@ public class ElementMultipartBuilderImpl implements IElementMultipartBuilder {
     }
 
     private void buildVariables(IElementExecutionLoader buildLoader) {
-        if (variableElements == null) {
-            variableElements = new VariableElement[codes.length];
-            for (int i = 0; i < codes.length; i++) {
-                Class type = types[i];
-                int code = codes[i];
-                String name = names[i];
-
-                VariableElement variableElement = new VariableElement() {
-                    @Override
-                    public Class<?> getVariableType() {
-                        return type;
-                    }
-
-                    @Override
-                    public Object getValue() {
-                        return buildLoader.build(code, false, null);
-                    }
-
-                    @Override
-                    public void setValue(Object value) {
-                        buildLoader.build(code, true, new Object[]{value});
-                    }
-
-                    @Override
-                    public Object getHost() {
-                        return host;
-                    }
-
-                    @Override
-                    public String getSimpleName() {
-                        return name;
-                    }
-                };
+        if (variableElements == null) variableElements = new VariableElement[codes.length];
+        for (int i = 0; i < codes.length; i++) {
+            Class type = types[i];
+            int code = codes[i];
+            String name = names[i];
+            if (variableElements[i] == null) {
                 variableAnnotationValues.put(name, typesAnnotationValues.get(i));
-                variableElements[i] = variableElement;
             }
+            variableElements[i] = new VariableElement() {
+                @Override
+                public Class getVariableType() {
+                    return type;
+                }
+
+                @Override
+                public Object getValue() {
+                    return buildLoader.build(code, false, null);
+                }
+
+                @Override
+                public void setValue(Object value) {
+                    buildLoader.build(code, true, new Object[]{value});
+                }
+
+                @Override
+                public Object getHost() {
+                    return host;
+                }
+
+                @Override
+                public String getSimpleName() {
+                    return name;
+                }
+            };
         }
         typesAnnotationValues = null;
     }

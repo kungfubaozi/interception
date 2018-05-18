@@ -172,7 +172,7 @@ public class ElementBuilderImpl implements IElementBuilder {
                 case 1://field
                     element = new VariableElement() {
                         @Override
-                        public Class<?> getVariableType() {
+                        public Class getVariableType() {
                             return builder.returnType;
                         }
 
@@ -207,12 +207,12 @@ public class ElementBuilderImpl implements IElementBuilder {
                         }
 
                         @Override
-                        public Class<?> getReturnType() {
+                        public Class getReturnType() {
                             return builder.returnType;
                         }
 
                         @Override
-                        public Class<?>[] getThrownTypes() {
+                        public Class[] getThrownTypes() {
                             return builder.thrownTypes;
                         }
 
@@ -244,7 +244,7 @@ public class ElementBuilderImpl implements IElementBuilder {
                     int finalI = i;
                     ParameterElement parameter = new ParameterElement() {
                         @Override
-                        public Class<?> getVariableType() {
+                        public Class getVariableType() {
                             return builder.types[finalI];
                         }
 

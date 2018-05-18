@@ -9,7 +9,7 @@ public interface TypeNames {
     String INTERFACE_ELEMENT = "com/zskpaco/interception/Element";
     String L_INTERFACE_ELEMENT = "L" + INTERFACE_ELEMENT + ";";
 
-    String ASSIGNMENT = "com/zskpaco/interception/ThisVisitor";
+    String ASSIGNMENT = "com/zskpaco/interception/StaticInitializer";
     String L_ASSIGNMENT = "L" + INTERFACE_ELEMENT + ";";
 
     String ANNOTATION_SURROUND = "com/zskpaco/interception/Surround";

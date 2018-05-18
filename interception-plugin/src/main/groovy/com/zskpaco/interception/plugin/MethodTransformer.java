@@ -1,5 +1,6 @@
 package com.zskpaco.interception.plugin;
 
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.commons.GeneratorAdapter;
 
@@ -28,7 +29,7 @@ public class MethodTransformer extends GeneratorAdapter {
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor,
                                 boolean isInterface) {
-        if (opcode == INVOKESTATIC && owner.equals(ASSIGNMENT) && name.equals("initialize")) {
+        if (opcode == INVOKESTATIC && owner.equals(ASSIGNMENT) && name.equals("justAllOfThis")) {
             init();
         } else {
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
@@ -43,18 +44,33 @@ public class MethodTransformer extends GeneratorAdapter {
 
     private void initLoader() {
         if (elementLoader) {
-            mv.visitVarInsn(ALOAD, 0);
+//            mv.visitVarInsn(ALOAD, 0);
+//            mv.visitTypeInsn(NEW, elementOwner);
+//            mv.visitInsn(DUP);
+//            mv.visitMethodInsn(INVOKESPECIAL, elementOwner, "<init>", "()V", false);
+//            mv.visitFieldInsn(PUTFIELD, owner, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
+
+            mv.visitFieldInsn(GETSTATIC, owner, "$_Element_Loader",
+                    L_INTERFACE_ELEMENT_LOADER);
+            Label l1 = new Label();
+            mv.visitJumpInsn(IFNONNULL, l1);
+            Label l2 = new Label();
+            mv.visitLabel(l2);
             mv.visitTypeInsn(NEW, elementOwner);
             mv.visitInsn(DUP);
             mv.visitMethodInsn(INVOKESPECIAL, elementOwner, "<init>", "()V", false);
-            mv.visitFieldInsn(PUTFIELD, owner, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
+            mv.visitFieldInsn(PUTSTATIC, owner, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
+            mv.visitLabel(l1);
+            mv.visitFrame(F_SAME, 0, null, 0, null);
+
             initLoader(mv, owner);
         }
     }
 
     private void initLoader(MethodVisitor mv, String owner) {
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, owner, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
+        //mv.visitVarInsn(ALOAD, 0);
+
+        mv.visitFieldInsn(GETSTATIC, owner, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
         mv.visitVarInsn(ALOAD, 0);
         mv.visitInsn(ACONST_NULL);
         mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_LOADER, "init",

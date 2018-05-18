@@ -8,9 +8,9 @@ public interface ExecutableElement extends Element {
 
     ParameterElement[] getParameters();
 
-    Class<?> getReturnType();
+    Class getReturnType();
 
-    Class<?>[] getThrownTypes();
+    Class[] getThrownTypes();
 
     /**
      * 执行原方法

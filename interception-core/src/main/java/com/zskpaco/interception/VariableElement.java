@@ -6,7 +6,7 @@ package com.zskpaco.interception;
  */
 public interface VariableElement extends Element {
 
-    Class<?> getVariableType();
+    Class getVariableType();
 
     Object getValue();
 

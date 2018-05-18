@@ -210,31 +210,58 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
             mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + ACC_SYNTHETIC, "_init",
                     "(Ljava/lang/Object;)L" + name + ";", null, null);
             mv.visitCode();
-            Label l0 = new Label();
-            mv.visitLabel(l0);
+//            Label l0 = new Label();
+//            mv.visitLabel(l0);
+//            mv.visitTypeInsn(NEW, elementOwner);
+//            mv.visitInsn(DUP);
+//            mv.visitMethodInsn(INVOKESPECIAL, elementOwner, "<init>", "()V", false);
+//            mv.visitVarInsn(ASTORE, 1);
+//            Label l1 = new Label();
+//            mv.visitLabel(l1);
+//            mv.visitTypeInsn(NEW, name);
+//            mv.visitInsn(DUP);
+//            mv.visitMethodInsn(INVOKESPECIAL, name, "<init>", "()V", false);
+//            mv.visitVarInsn(ASTORE, 2);
+//            Label l2 = new Label();
+//            mv.visitLabel(l2);
+//            mv.visitVarInsn(ALOAD, 1);
+//            mv.visitVarInsn(ALOAD, 2);
+//            mv.visitVarInsn(ALOAD, 0);
+//            mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_LOADER, "init",
+//                    "(Ljava/lang/Object;Ljava/lang/Object;)V", true);
+//            Label l3 = new Label();
+//            mv.visitLabel(l3);
+//            mv.visitVarInsn(ALOAD, 2);
+//            mv.visitInsn(ARETURN);
+//            Label l4 = new Label();
+//            mv.visitLabel(l4);
+//            mv.visitMaxs(0, 0);
+//            mv.visitEnd();
+
+            mv.visitFieldInsn(GETSTATIC, name, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
+            Label l1 = new Label();
+            mv.visitJumpInsn(IFNONNULL, l1);
+            Label l2 = new Label();
+            mv.visitLabel(l2);
             mv.visitTypeInsn(NEW, elementOwner);
             mv.visitInsn(DUP);
             mv.visitMethodInsn(INVOKESPECIAL, elementOwner, "<init>", "()V", false);
-            mv.visitVarInsn(ASTORE, 1);
-            Label l1 = new Label();
+            mv.visitFieldInsn(PUTSTATIC, name, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
             mv.visitLabel(l1);
+            mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+
             mv.visitTypeInsn(NEW, name);
             mv.visitInsn(DUP);
             mv.visitMethodInsn(INVOKESPECIAL, name, "<init>", "()V", false);
-            mv.visitVarInsn(ASTORE, 2);
-            Label l2 = new Label();
-            mv.visitLabel(l2);
+            mv.visitVarInsn(ASTORE, 1);
+
+            mv.visitFieldInsn(GETSTATIC, name, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
             mv.visitVarInsn(ALOAD, 1);
-            mv.visitVarInsn(ALOAD, 2);
             mv.visitVarInsn(ALOAD, 0);
             mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_LOADER, "init",
                     "(Ljava/lang/Object;Ljava/lang/Object;)V", true);
-            Label l3 = new Label();
-            mv.visitLabel(l3);
-            mv.visitVarInsn(ALOAD, 2);
+            mv.visitVarInsn(ALOAD, 1);
             mv.visitInsn(ARETURN);
-            Label l4 = new Label();
-            mv.visitLabel(l4);
             mv.visitMaxs(0, 0);
             mv.visitEnd();
         }
@@ -249,8 +276,8 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                 newName = (name + "$" + element.processId).replace("-", "x");
                 mv = cv.visitMethod(access, name, descriptor, signature, exceptions);
                 mv.visitCode();
-                mv.visitVarInsn(ALOAD, 0);
-                mv.visitFieldInsn(GETFIELD, ClassHandler.this.name, "$_Element_Loader",
+                //mv.visitVarInsn(ALOAD, 0);
+                mv.visitFieldInsn(GETSTATIC, ClassHandler.this.name, "$_Element_Loader",
                         L_INTERFACE_ELEMENT_LOADER);
                 mv.visitLdcInsn(new Integer(element.processId));
 
@@ -289,11 +316,10 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
             ElementVisitor.visit(runnerOwner, isSurround, path, name, modelMap, elementOwner,
                     loadName, loadRep);
 
-            if (!isSurround) {
-                FieldVisitor fv = cv.visitField(ACC_PRIVATE + ACC_FINAL + ACC_SYNTHETIC,
-                        "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER, null, null);
-                fv.visitEnd();
-            }
+            FieldVisitor fv = cv.visitField(ACC_PRIVATE + ACC_STATIC + ACC_FINAL + ACC_SYNTHETIC,
+                    "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER, null, null);
+            fv.visitEnd();
+
 
         }
     }

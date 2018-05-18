@@ -14,7 +14,7 @@ public interface ParameterElement extends Element {
      *
      * @return
      */
-    Class<?> getVariableType();
+    Class getVariableType();
 
     Object getValue();
 

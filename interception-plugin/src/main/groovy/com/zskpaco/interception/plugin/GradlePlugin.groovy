@@ -9,18 +9,23 @@ import org.gradle.api.Project
 
 class GradlePlugin implements Plugin<Project> {
 
+    public static boolean DEBUG = Version.DEBUG == "true"
+
     @Override
     void apply(Project project) {
         boolean isAndroidApplication = project.plugins.findPlugin("com.android.application") != null
         boolean isAndroidLibrary = project.plugins.findPlugin("com.android.library") != null
         if (isAndroidApplication || isAndroidLibrary) {
-            project.dependencies.add("implementation", "com.github.zskpaco.interception:interception-core:${Version.VERSION}")
-            boolean isKotlinProject = project.plugins.findPlugin("kotlin-android") != null
-            if (isKotlinProject) {
-                project.dependencies.add("kapt", "com.github.zskpaco.interception:interception-processor:${Version.VERSION}")
-            } else {
-                project.dependencies.add("annotationProcessor", "com.github.zskpaco.interception:interception-processor:${Version.VERSION}")
+            if (!DEBUG){
+                project.dependencies.add("implementation", "com.github.zskpaco.interception:interception-core:${Version.VERSION}")
+                boolean isKotlinProject = project.plugins.findPlugin("kotlin-android") != null
+                if (isKotlinProject) {
+                    project.dependencies.add("kapt", "com.github.zskpaco.interception:interception-processor:${Version.VERSION}")
+                } else {
+                    project.dependencies.add("annotationProcessor", "com.github.zskpaco.interception:interception-processor:${Version.VERSION}")
+                }
             }
+
             project.extensions.create('interception', PluginConfig)
             //设置AnnotationProcessor需要的值
             DefaultConfig defaultConfig = project.android.defaultConfig

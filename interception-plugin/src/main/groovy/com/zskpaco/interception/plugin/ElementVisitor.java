@@ -478,8 +478,8 @@ public class ElementVisitor {
             } else {
                 v = (boolean) value;
             }
-            if (v) mv.visitInsn(ICONST_0);
-            else mv.visitInsn(ICONST_1);
+            if (v) mv.visitInsn(ICONST_1);
+            else mv.visitInsn(ICONST_0);
             mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf",
                     "(Z)Ljava/lang/Boolean;", false);
         } else if (type.equals("int")) {

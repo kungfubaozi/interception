@@ -306,7 +306,6 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
     public void visitEnd() {
         super.visitEnd();
         if (modelMap.size() > 0) {
-
             if (runnerOwner == null) {
                 VisitorUtils.log("module runner create class");
                 runnerOwner = ModuleRunnerWrite.write(

@@ -15,12 +15,14 @@ public class MethodTransformer extends GeneratorAdapter {
     private boolean elementLoader;
     private HashSet<ClassHandler.Surround> surroundFieldSet;
     private String elementOwner;
+    private String name;
 
     MethodTransformer(String owner, MethodVisitor mv, int access, String name, String desc,
                       HashSet<ClassHandler.Surround> surroundFieldSet, boolean elementLoader,
                       String elementOwner) {
         super(ASM6, mv, access, name, desc);
         this.owner = owner;
+        this.name = name;
         this.elementOwner = elementOwner;
         this.elementLoader = elementLoader;
         this.surroundFieldSet = surroundFieldSet;
@@ -50,8 +52,7 @@ public class MethodTransformer extends GeneratorAdapter {
 //            mv.visitMethodInsn(INVOKESPECIAL, elementOwner, "<init>", "()V", false);
 //            mv.visitFieldInsn(PUTFIELD, owner, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
 
-            mv.visitFieldInsn(GETSTATIC, owner, "$_Element_Loader",
-                    L_INTERFACE_ELEMENT_LOADER);
+            mv.visitFieldInsn(GETSTATIC, owner, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
             Label l1 = new Label();
             mv.visitJumpInsn(IFNONNULL, l1);
             Label l2 = new Label();
@@ -61,7 +62,16 @@ public class MethodTransformer extends GeneratorAdapter {
             mv.visitMethodInsn(INVOKESPECIAL, elementOwner, "<init>", "()V", false);
             mv.visitFieldInsn(PUTSTATIC, owner, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
             mv.visitLabel(l1);
-            mv.visitFrame(F_SAME, 0, null, 0, null);
+            if (name.equals("<clinit>")) {
+                //不支持在静态初始化方法内初始化
+                throw new IllegalArgumentException(
+                        "Do not support initialization in the static initialization method");
+            }
+            if (name.equals("<init>")) {
+                mv.visitFrame(F_FULL, 1, new Object[]{owner}, 0, new Object[]{});
+            } else {
+                mv.visitFrame(F_SAME, 0, null, 0, null);
+            }
 
             initLoader(mv, owner);
         }

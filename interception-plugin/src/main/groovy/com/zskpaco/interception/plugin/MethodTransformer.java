@@ -73,25 +73,20 @@ public class MethodTransformer extends GeneratorAdapter {
                 mv.visitFrame(F_SAME, 0, null, 0, null);
             }
 
-            initLoader(mv, owner);
+            mv.visitFieldInsn(GETSTATIC, owner, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitInsn(ACONST_NULL);
+            mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_LOADER, "init",
+                    "(Ljava/lang/Object;Ljava/lang/Object;)V", true);
         }
-    }
-
-    private void initLoader(MethodVisitor mv, String owner) {
-        //mv.visitVarInsn(ALOAD, 0);
-
-        mv.visitFieldInsn(GETSTATIC, owner, "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER);
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitInsn(ACONST_NULL);
-        mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_ELEMENT_LOADER, "init",
-                "(Ljava/lang/Object;Ljava/lang/Object;)V", true);
-
     }
 
     private void loadSurroundField(MethodVisitor mv, String owner,
                                    HashSet<ClassHandler.Surround> surroundFieldSet) {
         if (surroundFieldSet != null) {
             for (ClassHandler.Surround surround : surroundFieldSet) {
+                Label label = new Label();
+                mv.visitLabel(label);
                 String type = surround.desc.substring(1, surround.desc.length() - 1);
                 mv.visitVarInsn(ALOAD, 0);
                 mv.visitVarInsn(ALOAD, 0);

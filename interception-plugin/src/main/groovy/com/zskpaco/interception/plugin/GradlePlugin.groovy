@@ -6,17 +6,23 @@ import com.android.build.gradle.internal.dsl.DefaultConfig
 import com.zskpaco.interception.plugin.bean.PluginConfig
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.objectweb.asm.Opcodes
 
 class GradlePlugin implements Plugin<Project> {
 
     public static boolean DEBUG = Version.DEBUG == "true"
 
+    public static int OFFSET = 0
+
     @Override
     void apply(Project project) {
+        if (!DEBUG) {
+            OFFSET = Opcodes.ACC_SYNTHETIC
+        }
         boolean isAndroidApplication = project.plugins.findPlugin("com.android.application") != null
         boolean isAndroidLibrary = project.plugins.findPlugin("com.android.library") != null
         if (isAndroidApplication || isAndroidLibrary) {
-            if (!DEBUG){
+            if (!DEBUG) {
                 project.dependencies.add("implementation", "com.github.zskpaco.interception:interception-core:${Version.VERSION}")
                 boolean isKotlinProject = project.plugins.findPlugin("kotlin-android") != null
                 if (isKotlinProject) {

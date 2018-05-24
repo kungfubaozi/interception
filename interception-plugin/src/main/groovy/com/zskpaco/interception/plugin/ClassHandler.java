@@ -96,8 +96,8 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                         //set
                         String set = "(L" + name + ";" + fieldNode.desc + ")Ljava/lang/Object;";
                         getset[0] = set;
-                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + ACC_SYNTHETIC, accessName,
-                                set,
+                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + GradlePlugin.OFFSET,
+                                accessName, set,
                                 fieldNode.signature == null ? null : "(L" + name + ";" + fieldNode.signature + ")Ljava/lang/Object;",
                                 null);
                         mv.visitVarInsn(ALOAD, 0);
@@ -111,8 +111,8 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                         //get
                         String get = "(L" + name + ";)" + fieldNode.desc;
                         getset[1] = get;
-                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + ACC_SYNTHETIC, accessName,
-                                get,
+                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + GradlePlugin.OFFSET,
+                                accessName, get,
                                 fieldNode.signature == null ? null : "(L" + name + ";)" + fieldNode.signature,
                                 null);
                         mv.visitVarInsn(ALOAD, 0);
@@ -167,18 +167,19 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
 
                         String desc = "(L" + name + ";" + methodNode.desc.substring(1);
                         boolean returnNull = false;
-                        if (desc.endsWith("V")) {
+                        if (desc.endsWith(")V")) {
                             returnNull = true;
                             desc = desc.substring(0, desc.length() - 1) + "Ljava/lang/Object;";
                         }
-                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + ACC_SYNTHETIC, accessName,
-                                desc,
+
+                        mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + GradlePlugin.OFFSET,
+                                accessName, desc,
                                 methodNode.signature == null ? null : "(L" + name + ";" + (returnNull ? methodNode.signature.substring(
                                         1,
                                         methodNode.signature.length() - 1) + "Ljava/lang/Object;" : methodNode.signature.substring(
                                         1)), null);
                         VisitorUtils.visitVarLoadInsn(mv, desc);
-                        mv.visitMethodInsn(INVOKESPECIAL, name,
+                        mv.visitMethodInsn(INVOKEVIRTUAL, name,
                                 (methodNode.name + "$" + processId).replace("-", "x"),
                                 methodNode.desc, false);
                         if (returnNull) {
@@ -207,7 +208,7 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
         }
 
         if (isSurround) {
-            mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + ACC_SYNTHETIC, "_init",
+            mv = cv.visitMethod(ACC_PUBLIC + ACC_STATIC + GradlePlugin.OFFSET, "_init",
                     "(Ljava/lang/Object;)L" + name + ";", null, null);
             mv.visitCode();
 //            Label l0 = new Label();
@@ -315,8 +316,9 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
             ElementVisitor.visit(runnerOwner, isSurround, path, name, modelMap, elementOwner,
                     loadName, loadRep);
 
-            FieldVisitor fv = cv.visitField(ACC_PRIVATE + ACC_STATIC + ACC_FINAL + ACC_SYNTHETIC,
-                    "$_Element_Loader", L_INTERFACE_ELEMENT_LOADER, null, null);
+            FieldVisitor fv = cv.visitField(
+                    ACC_PRIVATE + ACC_STATIC + ACC_FINAL + GradlePlugin.OFFSET, "$_Element_Loader",
+                    L_INTERFACE_ELEMENT_LOADER, null, null);
             fv.visitEnd();
 
 

@@ -182,7 +182,7 @@ public class ElementVisitor {
             mv.visitEnd();
         }
         {
-            mv = cw.visitMethod(ACC_PUBLIC + ACC_BRIDGE + ACC_SYNTHETIC, "init",
+            mv = cw.visitMethod(ACC_PUBLIC + ACC_BRIDGE + GradlePlugin.OFFSET, "init",
                     "(Ljava/lang/Object;Ljava/lang/Object;)V", null, null);
             mv.visitCode();
             Label l0 = new Label();
@@ -218,8 +218,8 @@ public class ElementVisitor {
             mv.visitEnd();
         }
         {
-            mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC + ACC_SYNTHETIC, "_check_this_", "()V",
-                    null, null);
+            mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC + GradlePlugin.OFFSET, "_check_this_",
+                    "()V", null, null);
             mv.visitCode();
             Label l0 = new Label();
             mv.visitLabel(l0);
@@ -706,8 +706,16 @@ public class ElementVisitor {
                         VisitorUtils.visitCheckCast(mv, type);
                     }
                 }
+
+                boolean ireturn = model.getReturnType().equals("V");
+                
                 mv.visitMethodInsn(INVOKESTATIC, owner, model.getAccessName(),
-                        "(L" + owner + ";" + desc.toString() + ")Ljava/lang/Object;", false);
+                        "(L" + owner + ";" + desc.toString() + ")" + model.getReturnType(), false);
+
+                if (ireturn) {
+                    mv.visitInsn(ACONST_NULL);
+                }
+
                 mv.visitInsn(ARETURN);
             } else {
                 mv.visitVarInsn(ALOAD, 3);

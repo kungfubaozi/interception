@@ -179,7 +179,13 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                                         methodNode.signature.length() - 1) + "Ljava/lang/Object;" : methodNode.signature.substring(
                                         1)), null);
                         VisitorUtils.visitVarLoadInsn(mv, desc);
-                        mv.visitMethodInsn(INVOKEVIRTUAL, name,
+
+                        int call = INVOKEVIRTUAL;
+                        if (methodNode.access == ACC_PRIVATE || methodNode.access == ACC_PRIVATE + ACC_STATIC) {
+                            call = INVOKESPECIAL;
+                        }
+
+                        mv.visitMethodInsn(call, name,
                                 (methodNode.name + "$" + processId).replace("-", "x"),
                                 methodNode.desc, false);
                         if (returnNull) {

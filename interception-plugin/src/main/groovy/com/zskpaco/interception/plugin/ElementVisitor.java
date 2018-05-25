@@ -707,14 +707,11 @@ public class ElementVisitor {
                     }
                 }
 
-                boolean ireturn = model.getReturnType().equals("V");
-                
-                mv.visitMethodInsn(INVOKESTATIC, owner, model.getAccessName(),
-                        "(L" + owner + ";" + desc.toString() + ")" + model.getReturnType(), false);
+                boolean v = model.getReturnType().equals("V");
 
-                if (ireturn) {
-                    mv.visitInsn(ACONST_NULL);
-                }
+                mv.visitMethodInsn(INVOKESTATIC, owner, model.getAccessName(),
+                        "(L" + owner + ";" + desc.toString() + ")" + (v ? "Ljava/lang/Object;" : model.getReturnType()),
+                        false);
 
                 mv.visitInsn(ARETURN);
             } else {

@@ -7,7 +7,7 @@ import static org.objectweb.asm.Opcodes.*;
 public class VisitorUtils {
 
     public static void log(String format, Object... args) {
-        //System.out.println(String.format(format, args));
+        System.out.println(String.format(format, args));
     }
 
     public static void createInstance(ClassVisitor cv, String name, boolean singleton) {

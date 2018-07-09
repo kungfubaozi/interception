@@ -75,6 +75,10 @@ public class InterceptionProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
         if (roundEnvironment.getRootElements().size() == 0) return false;
         else {
+
+
+            System.out.println(moduleName + " annotation processor execution----------------------------------");
+
             InterceptionModel model = new InterceptionModel();
             model.setModule(moduleName);
             for (Element element : roundEnvironment.getElementsAnnotatedWith(Interceptor.class)) {

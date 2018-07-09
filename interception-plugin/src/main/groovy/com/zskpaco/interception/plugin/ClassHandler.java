@@ -327,8 +327,9 @@ public class ClassHandler extends ClassVisitor implements Opcodes {
                     L_INTERFACE_ELEMENT_LOADER, null, null);
             fv.visitEnd();
 
-
         }
+
+        VisitorUtils.log("--done");
     }
 
     /**
